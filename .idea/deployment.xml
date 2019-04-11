@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="校友圈">
+    <serverData>
+      <paths name="校友圈">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/application" local="$PROJECT_DIR$/application" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
