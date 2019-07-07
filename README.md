@@ -92,3 +92,7 @@ Demo
 ## 重启服务：
         service php-fpm restart
         
+        
+##校友圈项目修改
+    application/controller/**
+    application/model/**
