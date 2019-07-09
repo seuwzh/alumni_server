@@ -7,6 +7,7 @@
       <path value="$PROJECT_DIR$/vendor/qcloud/cos-sdk-v5" />
       <path value="$PROJECT_DIR$/vendor/symfony/event-dispatcher" />
       <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="D:/资料备份/phpStorm-CC-Helpers-master/CodeIgniter3" />
     </include_path>
   </component>
 </project>

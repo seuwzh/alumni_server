@@ -65,39 +65,49 @@ class Edit extends CI_Controller{
 
 		//处理post请求中的内容
 
-		$openid = $this->input->post('openid');
-    	$head_url = $this->input->post('head_url');
-    	$real_name = $this->input->post('real_name');
-    	$gender = $this->input->post('gender');
-    	$descr = $this->input->post('descr');
-    	$city = $this->input->post('city');
-    	$birth = $this->input->post('birth');
-    	$phone = $this->input->post('phone');
-    	$wechat = $this->input->post('wechat');
-    	$email = $this->input->post('email');
-    	$education_school = $this->input->post('education_school');
+		$openid = $this->input->post('openid');//openid
+    	$head_url = $this->input->post('head_url');//头像，支持默认头像
+    	$real_name = $this->input->post('real_name');//名字
+    	$gender = $this->input->post('gender');//性别
+    	$descr = $this->input->post('descr');//描述
+    	$city = $this->input->post('city');//城市
+    	$birth = $this->input->post('birth');//生日
+    	$phone = $this->input->post('phone');//不填写则显示“暂未填写”
+    	$wechat = $this->input->post('wechat');//同上
+    	$email = $this->input->post('email');//同上
+    	$education_school = $this->input->post('education_school');//教育相关
     	$education_background = $this->input->post('education_background');
     	$education_department = $this->input->post('education_department');
     	$education_profession = $this->input->post('education_profession');
     	$education_start_year = $this->input->post('education_start_year');
     	$education_end_year = $this->input->post('education_end_year');
-    	$work_company = $this->input->post('work_company');
+    	$work_company = $this->input->post('work_company');//工作相关
     	$work_job = $this->input->post('work_job');
-    	$work_start_year = $this->input->post('work_start_year');
-    	$work_end_year = $this->input->post('work_end_year');
 
         //判断默认头像
         if($head_url===NULL){
-            $head_url = 'https://www.zimotiontec.cn/head/headurl.png';
+            if($gender==='2'){
+                $head_url = 'https://www.zimotiontec.cn/head/2.png';
+            }else if($gender === '1'){
+                $head_url = 'https://www.zimotiontec.cn/head/1.png';
+            }else{
+                $head_url = 'https://www.zimotiontec.cn/head/headurl.png';
+            }
         }
         if($phone===NULL){
-            $phone = '暂未填写';
+            $phone = '未填写';
         }
         if($wechat===NULL){
-            $wechat = '暂未填写';
+            $wechat = '未填写';
         }
         if($email===NULL){
-            $email = '暂未填写';
+            $email = '未填写';
+        }
+        if($birth===NULL){
+            $birth = '未填写';
+        }
+        if($education_profession===NULL){
+            $profession = '未填写';
         }
 
 
@@ -112,7 +122,7 @@ class Edit extends CI_Controller{
             $data['message'] = 'miss school';
     	}else{
     		$data = $this->Edit_model->editfirst($openid,$head_url,$real_name,$gender,$descr,$city,$birth,$phone,$wechat,$email,
-    		$education_school,$education_background,$education_department,$education_profession,$education_start_year,$education_end_year,$work_company,$work_job,$work_start_year,$work_end_year);
+    		$education_school,$education_background,$education_department,$education_profession,$education_start_year,$education_end_year,$work_company,$work_job);
     	}
 
 		$this->json(
@@ -135,6 +145,10 @@ class Edit extends CI_Controller{
     	$profession = $this->input->post('profession');
     	$start_year = $this->input->post('start_year');
     	$end_year = $this->input->post('end_year');
+
+        if($profession===NULL){
+            $profession = '未填写';
+        }
 
     	if($openid===NULL){
     		$data['status'] = '500';

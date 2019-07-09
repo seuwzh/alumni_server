@@ -68,9 +68,7 @@ class Friend extends CI_Controller{
             $data['status'] = '500';
             $data['message'] = 'miss openid or friendid';
         }else{
-        	$this->Friend_model->invite($openid,$friendid);
-        	$data['status'] = '200';
-            $data['message'] = 'success';
+        	$data = $this->Friend_model->invite($openid,$friendid);
         }
 
 		//getall函数的返回类型

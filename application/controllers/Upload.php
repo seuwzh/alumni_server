@@ -1,84 +1,40 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
-use \QCloud_WeApp_SDK\Conf as Conf;
-use \QCloud_WeApp_SDK\Cos\CosAPI as Cos;
-use \QCloud_WeApp_SDK\Constants as Constants;
 
 class Upload extends CI_Controller {
-    public function index() {
-        // 处理文件上传
-        $file = $_FILES['file']; // 去除 field 值为 file 的文件
 
-        ini_set('upload_max_filesize', '10M');
-        ini_set('post_max_size', '10M');
+    public function __construct()
+    {
+        parent::__construct();//调用父类中的构造函数
+        $this->load->helper(array('form', 'url'));//加载辅助函数，帮助生成上传页面的form的起始标签
+    }
 
-        // 限制文件格式，支持图片上传
-        if ($file['type'] !== 'image/jpeg' && $file['type'] !== 'image/png' && $file['type'] !== 'image/jpg') {
-            $this->json([
-                'code' => 1,
-                'data' => '不支持的上传图片类型：' . $file['type']
-            ]);
-            return;
+    public function index()
+    {
+        $this->load->view('upload_form');//加载文件上传页面
+    }
+
+    public function do_upload()//执行上传的关键函数
+    {
+        $config['upload_path']      = './public/';//文件即将上传到的目录路径  ，注意这里经常出错
+        $config['allowed_types']    = 'gif|jpg|png';//允许上的文件 MIME 类型
+        $config['max_size']     = 100;//允许上传文件大小的最大值（单位 KB），设置为 0 表示无限制
+        $config['max_width']        = 1024;//图片的最大宽度（单位为像素），设置为 0 表示无限制
+        $config['max_height']       = 768;//图片的最小高度（单位为像素），设置为 0 表示无限制
+
+        $this->load->library('upload', $config);//初始化文件上传类，其中$this->load->library('类名');
+
+        if ( ! $this->upload->do_upload('userfile'))//如果不满足条件
+        {
+            $error = array('error' => $this->upload->display_errors());//获取错误信息
+            print_r($error);//打印错误信息
+            //$this->load->view('upload_form', $error);手册中给出的，未使用
         }
-        
-        // 限制文件大小：5M 以内
-        if ($file['size'] > 5 * 1024 * 1024) {
-            $this->json([
-                'code' => 1,
-                'data' => '上传图片过大，仅支持 5M 以内的图片上传'
-            ]);
-            return;
-        }
+        else
+        {
+            $data = array('upload_data' => $this->upload->data());//把上传文件的相关数据赋给$data变量
 
-        $cosClient = Cos::getInstance();
-        $cosConfig = Conf::getCos();
-        $bucketName = $cosConfig['fileBucket'];
-        $folderName = $cosConfig['uploadFolder'];
-
-        try {
-            /**
-             * 列出 bucket 列表
-             * 检查要上传的 bucket 有没有创建
-             * 若没有则创建
-             */
-            $bucketsDetail = $cosClient->listBuckets()->toArray()['Buckets'];
-            $bucketNames = [];
-            foreach ($bucketsDetail as $bucket) {
-                array_push($bucketNames, explode('-', $bucket['Name'])[0]);
-            }
-
-            // 若不存在 bucket 就创建 bucket
-            if (count($bucketNames) === 0 || !in_array($bucketName, $bucketNames)) {
-                $cosClient->createBucket([
-                    'Bucket' => $bucketName,
-                    'ACL' => 'public-read'
-                ])->toArray();
-            }
-
-            // 上传文件
-            $fileFolder = $folderName ? $folderName . '/' : '';
-            $fileKey = $fileFolder . md5(mt_rand()) . '-' . $file['name'];
-            $uploadStatus = $cosClient->upload(
-                $bucketName,
-                $fileKey,
-                file_get_contents($file['tmp_name'])
-            )->toArray();
-
-            $this->json([
-                'code' => 0,
-                'data' => [
-                    'imgUrl' => $uploadStatus['ObjectURL'],
-                    'size' => $file['size'],
-                    'mimeType' => $file['type'],
-                    'name' => $fileKey
-                ]
-            ]);
-        } catch (Exception $e) {
-            $this->json([
-                'code' => 1,
-                'error' => $e->__toString()
-            ]);
+            $this->load->view('upload_success', $data);//加载上传成功页面，将上传文件的相关数据一并加载
         }
     }
 }
+?>

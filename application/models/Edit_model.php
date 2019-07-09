@@ -20,7 +20,7 @@ class Edit_model extends CI_Model {
         $query = $this->db->get_where('PersonalInfor',array('openid'=>$openid));
 
         if($query->result_array()===[]){
-            $id = random_string('alnum',8);
+            $id = random_string('alnum',16);
 
             $this->db->insert('PersonalInfor',array('openid'=>$openid,'head_url'=>$head_url,
             'real_name'=>$real_name,'gender'=>$gender,'descr'=>$descr,'city'=>$city,
@@ -48,17 +48,18 @@ class Edit_model extends CI_Model {
     }
 
     public function editfirst($openid,$head_url,$real_name,$gender,$descr,$city,$birth,$phone,$wechat,$email,
-        $education_school,$education_background,$education_department,$education_profession,$education_start_year,$education_end_year,$work_company,$work_job,$work_start_year,$work_end_year){
+        $education_school,$education_background,$education_department,$education_profession,$education_start_year,$education_end_year,$work_company,$work_job){
 
         $query = $this->db->get_where('PersonalInfor',array('openid'=>$openid));
 
         if($query->result_array()!=[]){
 
             $data['status'] = '502';
-            $data['message'] = 'already exist';
+            $data['message'] = 'wait....';
 
         }else{
             $id = random_string('alnum',8);
+            $education_id = random_string('nozero',8);
 
             $this->db->insert('PersonalInfor',array('openid'=>$openid,'head_url'=>$head_url,
             'real_name'=>$real_name,'gender'=>$gender,'descr'=>$descr,'city'=>$city,
@@ -68,10 +69,11 @@ class Edit_model extends CI_Model {
 
             $this->db->insert('Education',array('openid'=>$openid,'school'=>$education_school,
             'background'=>$education_background,'department'=>$education_department,'profession'=>$education_profession,
-            'start_year'=>$education_start_year,'end_year'=>$education_end_year));
+            'start_year'=>$education_start_year,'end_year'=>$education_end_year,'num'=>$education_id));
 
-            if($school!=NULL){
-                $this->db->insert('Work',array('openid'=>$openid,'company'=>$work_company,'job'=>$work_job,'start_year'=>$work_start_year,'end_year'=>$work_end_year));
+            if($work_company!=NULL){
+                $work_id = random_string('nozero',8);
+                $this->db->insert('Work',array('openid'=>$openid,'company'=>$work_company,'job'=>$work_job,'start_year'=>$work_start_year,'end_year'=>$work_end_year,'num'=>$work_id));
             }
             
 
